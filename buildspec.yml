@@ -4,11 +4,9 @@ phases:
   install:
     commands:
       - echo "Updating system packages..."
-      - sudo yum clean all
-      - sudo yum makecache
-      - sudo yum update -y || echo "Warning: Update failed, continuing..."
+      - sudo yum update -y
       - echo "Installing required dependencies..."
-      - sudo yum install -y unzip aws-cli || echo "Warning: Dependency installation failed, continuing..."
+      - sudo yum install -y unzip
 
   build:
     commands:
@@ -20,12 +18,11 @@ phases:
       - |
         if [ -f index.html ] && [ -d scripts ] && [ -f appspec.yml ]; then 
           zip -r app.zip index.html scripts/ appspec.yml
-          echo "Packaging successful!"
         else 
           echo "Error: Required files are missing!" && exit 1
         fi
       - echo "Uploading package to S3..."
-      - aws s3 cp app.zip s3://my-new-ec2/ --region ap-south-1 || { echo "S3 upload failed!" && exit 1; }
+      - aws s3 cp app.zip s3://my-new-ec2/ || exit 1
       - echo "Build completed successfully!"
 
 artifacts:
