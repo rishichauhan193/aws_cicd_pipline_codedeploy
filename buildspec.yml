@@ -2,11 +2,15 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      nodejs: latest
     commands:
       - echo "Updating system packages..."
-      - sudo yum update -y
+      - sudo yum update -y || echo "Warning: Update failed, continuing..."
       - echo "Installing required dependencies..."
-      - sudo yum install -y unzip
+      - sudo yum install -y unzip aws-cli
+      - echo "Verifying AWS CLI installation..."
+      - aws --version
 
   build:
     commands:
@@ -24,6 +28,16 @@ phases:
       - echo "Uploading package to S3..."
       - aws s3 cp app.zip s3://my-new-ec2/ || exit 1
       - echo "Build completed successfully!"
+
+  deploy:
+    commands:
+      - echo "Starting deployment..."
+      - aws deploy create-deployment \
+          --application-name MyCodeDeployApp \
+          --deployment-group-name MyDeploymentGroup \
+          --s3-location bucket=my-new-ec2,key=app.zip,bundleType=zip \
+          || exit 1
+      - echo "Deployment triggered successfully!"
 
 artifacts:
   files:
