@@ -22,7 +22,7 @@ phases:
           echo "Error: Required files are missing!" && exit 1
         fi
       - echo "Uploading package to S3..."
-      - aws s3 cp app.zip s3://my-new-backt/ || exit 1
+      - aws s3 cp app.zip s3://my-new-ec2/ || exit 1
       - echo "Build completed successfully!"
 
 artifacts:
