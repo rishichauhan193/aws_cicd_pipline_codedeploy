@@ -19,7 +19,7 @@ phases:
       - service httpd start
       - echo "Packaging application..."
       - zip -r app.zip index.html scripts/ appspec.yml
-      - aws s3 cp app.zip s3://your-s3-bucket-name/
+      - aws s3 cp app.zip s3://my-new-backt/
 
 artifacts:
   files:
