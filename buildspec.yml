@@ -2,26 +2,25 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      nodejs: latest
     commands:
-      - echo "Installing dependencies..."
-      - ls -l   # List files to check if package.json is present
-      - cat package.json   # Verify the package.json content
-      - npm install
+      - echo "Installing Apache HTTP Server..."
+      - yum install -y httpd
+
   build:
     commands:
-      - echo "Building application..."
+      - echo "Build phase - No compilation required"
+
   post_build:
     commands:
-      - echo "Zipping application for deployment..."
-      - zip -r app.zip .
-      - echo "Uploading to S3..."
-      - aws s3 cp app.zip s3://my-new-backt/
-      - echo "Build complete"
+      - echo "Stopping any running Apache service..."
+      - isExistApp=$(pgrep httpd)
+      - if [[ -n "$isExistApp" ]]; then service httpd stop; fi
+      - echo "Starting Apache service..."
+      - service httpd start
+      - echo "Packaging application..."
+      - zip -r app.zip index.html scripts/ appspec.yml
+      - aws s3 cp app.zip s3://your-s3-bucket-name/
 
 artifacts:
   files:
     - app.zip
-  discard-paths: yes
-
