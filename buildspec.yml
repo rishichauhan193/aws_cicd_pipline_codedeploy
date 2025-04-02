@@ -3,8 +3,10 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo "Installing Apache HTTP Server..."
-      - yum install -y httpd
+      - echo "Updating system packages..."
+      - sudo yum update -y
+      - echo "Installing required dependencies..."
+      - sudo yum install -y unzip
 
   build:
     commands:
@@ -12,14 +14,15 @@ phases:
 
   post_build:
     commands:
-      - echo "Stopping any running Apache service..."
-      - isExistApp=$(pgrep httpd)
-      - if [[ -n "$isExistApp" ]]; then service httpd stop; fi
-      - echo "Starting Apache service..."
-      - service httpd start
       - echo "Packaging application..."
-      - zip -r app.zip index.html scripts/ appspec.yml
-      - aws s3 cp app.zip s3://my-new-backt/
+      - if [ -f index.html ] && [ -d scripts ] && [ -f appspec.yml ]; then 
+          zip -r app.zip index.html scripts/ appspec.yml; 
+        else 
+          echo "Error: Required files are missing!" && exit 1; 
+        fi
+      - echo "Uploading package to S3..."
+      - aws s3 cp app.zip s3://my-new-backt/ || exit 1
+      - echo "Build completed successfully!"
 
 artifacts:
   files:
