@@ -6,6 +6,8 @@ phases:
       nodejs: latest
     commands:
       - echo "Installing dependencies..."
+      - ls -l   # List files to check if package.json is present
+      - cat package.json   # Verify the package.json content
       - npm install
   build:
     commands:
@@ -22,3 +24,4 @@ artifacts:
   files:
     - app.zip
   discard-paths: yes
+
