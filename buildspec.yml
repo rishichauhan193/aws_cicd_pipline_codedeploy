@@ -10,6 +10,10 @@ phases:
       - echo "Installing required dependencies..."
       - yum install -y unzip aws-cli || true
 
+  pre_build:
+    commands:
+      - echo "Pre-build phase - No actions required"
+
   build:
     commands:
       - echo "Build phase - No compilation required"
@@ -20,9 +24,6 @@ phases:
       - mkdir -p /home/ec2-user/app
       - cp -r index.html /home/ec2-user/app/
       - if [ -d scripts ]; then cp -r scripts /home/ec2-user/app/; else echo "No scripts directory found, skipping..."; fi
-
-  deploy:
-    commands:
       - echo "Starting application..."
       - if [ -f /home/ec2-user/app/scripts/start.sh ]; then 
           chmod +x /home/ec2-user/app/scripts/start.sh && /home/ec2-user/app/scripts/start.sh; 
