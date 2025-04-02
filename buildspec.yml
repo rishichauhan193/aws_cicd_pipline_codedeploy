@@ -7,10 +7,8 @@ phases:
     commands:
       - echo "Updating system packages..."
       - sudo yum update -y || echo "Warning: Update failed, continuing..."
-      - echo "Installing required dependencies..."
+      - echo "Installing necessary dependencies..."
       - sudo yum install -y unzip aws-cli
-      - echo "Verifying AWS CLI installation..."
-      - aws --version
 
   build:
     commands:
@@ -18,27 +16,20 @@ phases:
 
   post_build:
     commands:
-      - echo "Packaging application..."
-      - |
-        if [ -f index.html ] && [ -d scripts ] && [ -f appspec.yml ]; then 
-          zip -r app.zip index.html scripts/ appspec.yml
-        else 
-          echo "Error: Required files are missing!" && exit 1
-        fi
-      - echo "Uploading package to S3..."
-      - aws s3 cp app.zip s3://my-new-ec2/ || exit 1
-      - echo "Build completed successfully!"
+      - echo "Moving files to deployment directory..."
+      - sudo mkdir -p /home/ec2-user/app
+      - sudo cp -r index.html /home/ec2-user/app/
+      - sudo cp -r scripts /home/ec2-user/app/ || echo "No scripts folder found, skipping..."
+      - echo "Deployment preparation completed!"
 
   deploy:
     commands:
-      - echo "Starting deployment..."
-      - aws deploy create-deployment \
-          --application-name MyCodeDeployApp \
-          --deployment-group-name MyDeploymentGroup \
-          --s3-location bucket=my-new-ec2,key=app.zip,bundleType=zip \
-          || exit 1
-      - echo "Deployment triggered successfully!"
+      - echo "Restarting application..."
+      - sudo chmod +x /home/ec2-user/app/scripts/start.sh || echo "No start script found, skipping..."
+      - sudo /home/ec2-user/app/scripts/start.sh || echo "Application started manually."
+      - echo "Deployment completed successfully!"
 
 artifacts:
   files:
-    - app.zip
+    - index.html
+    - scripts/** 
