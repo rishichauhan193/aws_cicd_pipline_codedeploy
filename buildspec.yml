@@ -6,9 +6,9 @@ phases:
       nodejs: latest
     commands:
       - echo "Updating system packages..."
-      - sudo yum update -y || echo "Warning: Update failed, continuing..."
-      - echo "Installing necessary dependencies..."
-      - sudo yum install -y unzip aws-cli
+      - yum update -y || echo "Warning: System update failed, continuing..."
+      - echo "Installing required dependencies..."
+      - yum install -y unzip aws-cli
 
   build:
     commands:
@@ -16,20 +16,18 @@ phases:
 
   post_build:
     commands:
-      - echo "Moving files to deployment directory..."
-      - sudo mkdir -p /home/ec2-user/app
-      - sudo cp -r index.html /home/ec2-user/app/
-      - sudo cp -r scripts /home/ec2-user/app/ || echo "No scripts folder found, skipping..."
-      - echo "Deployment preparation completed!"
+      - echo "Setting up application directory..."
+      - mkdir -p /home/ec2-user/app
+      - cp -r index.html /home/ec2-user/app/
+      - cp -r scripts/ /home/ec2-user/app/ || echo "Warning: No scripts directory found, skipping..."
 
   deploy:
     commands:
-      - echo "Restarting application..."
-      - sudo chmod +x /home/ec2-user/app/scripts/start.sh || echo "No start script found, skipping..."
-      - sudo /home/ec2-user/app/scripts/start.sh || echo "Application started manually."
-      - echo "Deployment completed successfully!"
+      - echo "Starting application..."
+      - chmod +x /home/ec2-user/app/scripts/start.sh || echo "Warning: No start script found, skipping execution..."
+      - /home/ec2-user/app/scripts/start.sh || echo "Warning: Application may not have started properly."
 
 artifacts:
   files:
     - index.html
-    - scripts/** 
+    - scripts/**
