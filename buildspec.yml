@@ -15,10 +15,11 @@ phases:
   post_build:
     commands:
       - echo "Packaging application..."
-      - if [ -f index.html ] && [ -d scripts ] && [ -f appspec.yml ]; then 
-          zip -r app.zip index.html scripts/ appspec.yml; 
+      - |
+        if [ -f index.html ] && [ -d scripts ] && [ -f appspec.yml ]; then 
+          zip -r app.zip index.html scripts/ appspec.yml
         else 
-          echo "Error: Required files are missing!" && exit 1; 
+          echo "Error: Required files are missing!" && exit 1
         fi
       - echo "Uploading package to S3..."
       - aws s3 cp app.zip s3://my-new-backt/ || exit 1
