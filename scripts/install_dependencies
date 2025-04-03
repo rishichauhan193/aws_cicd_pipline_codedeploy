@@ -2,11 +2,7 @@
 # yum install -y httpd
 
 #!/bin/bash
-set -e  # Stop script on any error
-
 sudo yum update -y
-sudo yum install -y httpd
-
-# Enable and start Apache
-sudo systemctl enable httpd
-sudo systemctl start httpd
+sudo yum install -y nodejs npm
+cd /home/ec2-user/app
+npm install
