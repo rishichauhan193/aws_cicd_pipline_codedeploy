@@ -1,2 +1,12 @@
 #!/bin/bash
-yum install -y httpd
+# yum install -y httpd
+
+#!/bin/bash
+set -e  # Stop script on any error
+
+sudo yum update -y
+sudo yum install -y httpd
+
+# Enable and start Apache
+sudo systemctl enable httpd
+sudo systemctl start httpd
